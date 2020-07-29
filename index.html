@@ -4,90 +4,243 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
-        // https://nuung.github.io/atmos_req/kasina?id=&price=&branCd=&optionSno=&stock&
-        // https://nuung.github.io/atmos_req/kasina.html?id=1242663794&price=109000&branCd=063&optionSno=128839&stock=3
-        // 모델 넘버 / 가격 / 사이즈script에서 얻어오는 옵션(optionSno)의 값 / brandCd
-        // 사이즈에 남은 개수 / displayOptionkey 이게 핵심인데.. 흠 
-        $(document).ready(function () {
-            
-            // make url params to Dict
-            function getUrlVars() {
-                var vars = [],
-                hash;
-                var hashes = window.location.href
-                .slice(window.location.href.indexOf("?") + 1)
-                .split("&");
-                for (var i = 0; i < hashes.length; i++) {
-                hash = hashes[i].split("=");
-                vars.push(hash[0]);
-                vars[hash[0]] = hash[1];
-                }
-                return vars;
-            }
-            
-            vars = getUrlVars();
+		function getParamValues() 
+		{
+			var values = [], hash;
+			var hashes = window.location.href
+			.slice(window.location.href.indexOf("?") + 1)
+			.split("&");
+			for (var i = 0; i < hashes.length; i++) 
+			{
+				hash = hashes[i].split("=");
+				values.push(hash[0]);
+				values[hash[0]] = hash[1];
+			}
+			return values;
+		}
+		
+		values = getParamValues();
 
-            if (vars) {
-                $("input[id=product_id]").val(vars.id);
-                $("input[class=price_one]").val(vars.price);
-                let temp = vars.price + ".00";
-                $("input[class=price_one_real]").val(temp);
-                $("input[id=product_brand]").val(vars.brandCd);
-                $("input[id=product_size_id]").val(vars.optionSno);
-                $("input[id=product_stock]").val(vars.stock);
-                $("#form").attr(
-                    "action",
-                    "http://www.kasina.co.kr/order/cart_ps.php"
-                );
-                $("#form").submit();
-            }
+		if (values)
+		{
+			var io_type = "io_type[" + values.id + "][]=";
+			var io_id = "io_id[" + values.id + "][]=";
+			var io_value = "io_value[" + values.id + "][]=";
+			var ct_qty = "ct_qty[" + values.id + "][]=";
 
-        });
+			function copy_click()
+			{
+				var t = document.createElement("textarea");
+				document.body.appendChild(t);
+				t.value =
+					"var add = new XMLHttpRequest();\r\n" +
+					"var cart = new XMLHttpRequest();\r\n" +
+					"\r\n" +
+					"\r\n" +
+					"cart.addEventListener('readystatechange', function (evt)\r\n" +
+					"{\r\n" +
+					"    if (cart.readyState === 4 && cart.status === 200)\r\n" +
+					"    {\r\n" +
+					"        let order=document.createElement('a');\r\n" +
+					"        order.target='_blank';\r\n" +
+					"        order.href='https://peaceminusone.com/shop/orderform.php';\r\n" +
+					"\r\n" +
+					"        if (window.confirm('Add Product, go to order!'))\r\n" +
+					"        {\r\n" +
+					"            order.click();\r\n" +
+					"        };\r\n" +
+					"    }" +
+					"});\r\n" +
+					"\r\n" +
+					"add.addEventListener('readystatechange', function (evt)\r\n" +
+					"{\r\n" +
+					"    if (add.readyState === 4 && add.status === 200)\r\n" +
+					"    {\r\n" +
+					"        cart.open('POST',  'https://peaceminusone.com/shop/cartupdate.php',  true);\r\n" +
+					"        cart.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\r\n" +
+					"        cart.send(" + "ct_chk[0]=1&it_id[0]=" + values.id + "&url=./orderform.php&records=1&act=buy" + ");" +
+					"\r\n" +
+					"    }\r\n" +
+					"});\r\n" +
+					"add.open('POST',  'https://peaceminusone.com/shop/cartupdate.ajax.php',  true);\r\n" +
+					"add.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\r\n" +
+					"add.send(" + "it_id[]=" + values.id + "&sw_direct=&url=&ajax=true&" + io_type + "0" + "&" + io_id + values.size + "&" + io_value + "size:" + values.size + "&" + ct_qty + "1" + "); \r\n";
+				t.select();
+				document.execCommand('copy');
+				document.body.removeChild(t);
+				
+				alert("Console Command Copy");
+			}
+			
+			function cart_click() 
+			{				
+				var form = document.createElement( "form" );
+				form.setAttribute( "charset", "UTF-8" );
+				form.setAttribute( "method", "Post" );
+				form.setAttribute( "action", "https://peaceminusone.com/shop/cartupdate.ajax.php" );
+				form.setAttribute("target", "_blank");
+				 
+				var hiddenField = document.createElement( "input" );
+
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", "it_id[]" );
+				hiddenField.setAttribute( "value", values.id );
+				form.appendChild( hiddenField );
+
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", "sw_direct" );
+				hiddenField.setAttribute( "value", "" );
+				form.appendChild( hiddenField );
+				
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", "url" );
+				hiddenField.setAttribute( "value", "" );
+				form.appendChild( hiddenField );
+				
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", "ajax" );
+				hiddenField.setAttribute( "value", true );
+				form.appendChild( hiddenField );
+				
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", "it_price" );
+				hiddenField.setAttribute( "value", values.price );
+				form.appendChild( hiddenField );
+				
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", io_type );
+				hiddenField.setAttribute( "value", 0 );
+				form.appendChild( hiddenField );
+				
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", io_id );
+				hiddenField.setAttribute( "value", values.size );
+				form.appendChild( hiddenField );
+				
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", io_value );
+				hiddenField.setAttribute( "value", "size:" + values.size );
+				form.appendChild( hiddenField );
+				
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", ct_qty );
+				hiddenField.setAttribute( "value", 1 );
+				form.appendChild( hiddenField );
+
+				document.body.appendChild( form );
+				form.submit();
+			}
+			
+			function order_click() 
+			{			
+				var form = document.createElement( "form" );
+				form.setAttribute( "charset", "UTF-8" );
+				form.setAttribute( "method", "Post" );
+				form.setAttribute( "action", "https://peaceminusone.com/shop/cartupdate.php" );
+				form.setAttribute("target", "_blank");
+				 
+				var hiddenField = document.createElement( "input" );
+
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", "ct_chk[0]" );
+				hiddenField.setAttribute( "value", "1" );
+				form.appendChild( hiddenField );
+
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", "it_id[0]" );
+				hiddenField.setAttribute( "value", values.id );
+				form.appendChild( hiddenField );
+				
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", "url" );
+				hiddenField.setAttribute( "value", "./orderform.php" );
+				form.appendChild( hiddenField );
+				
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", "records" );
+				hiddenField.setAttribute( "value", "1" );
+				form.appendChild( hiddenField );
+				
+				hiddenField = document.createElement( "input" );
+				hiddenField.setAttribute( "type", "hidden" );
+				hiddenField.setAttribute( "name", "act" );
+				hiddenField.setAttribute( "value", "buy" );
+				form.appendChild( hiddenField );
+
+				document.body.appendChild( form );
+				form.submit();
+			}
+		}
+		
+		function login_click()
+		{
+			var form = document.createElement( "form" );
+			form.setAttribute( "charset", "UTF-8" );
+			form.setAttribute( "method", "Post" );
+			form.setAttribute( "action", "https://peaceminusone.com/bbs/login_check.php" );
+			form.setAttribute("target", "_blank");
+
+			var hiddenField = document.createElement( "input" );
+			
+			hiddenField.setAttribute( "type", "hidden" );
+			hiddenField.setAttribute( "name", "return_url" );
+			hiddenField.setAttribute( "value", "/board/?id=archive" );
+			form.appendChild( hiddenField );
+			
+			hiddenField.setAttribute( "type", "hidden" );
+			hiddenField.setAttribute( "name", "order_auth" );
+			hiddenField.setAttribute( "value", "0" );
+			form.appendChild( hiddenField );
+
+			hiddenField.setAttribute( "type", "hidden" );
+			hiddenField.setAttribute( "name", "mb_id" );
+			hiddenField.setAttribute( "value", document.getElementById("id").value );
+			form.appendChild( hiddenField );
+
+			hiddenField = document.createElement( "input" );
+			hiddenField.setAttribute( "type", "hidden" );
+			hiddenField.setAttribute( "name", "mb_password" );
+			hiddenField.setAttribute( "value", document.getElementById("pwd").value );
+			form.appendChild( hiddenField );
+			
+			document.body.appendChild( form );
+			form.submit();
+		}
     </script>
   <script src="chrome-extension://mooikfkahbdckldjjndioackbalphokd/assets/prompt.js"></script></head>
 
-  <body style="text-align: center;">
-    <h1>TEST</h1>
-    <form name="form" id="form" method="post" action="http://www.kasina.co.kr/order/cart_ps.php">
-      <input hidden="" name="mode" value="cartIn">
-      <input hidden="" name="scmNo" value="1">
-      <input hidden="" name="cartMode" value="d">
-      <input hidden="" class="price_one" name="set_goods_price" value="">
-      <input hidden="" class="price_one_real" name="set_goods_fixedPrice" value="">
-      <input hidden="" name="set_goods_mileage" value="0">
-      <input hidden="" id="product_stock" name="set_goods_stock" value="">
-      <input hidden="" class="price_one_real" name="set_coupon_dc_price" value="">
-      <input hidden="" name="set_goods_total_price" value="0">
-      <input hidden="" name="set_option_price" value="0">
-      <input hidden="" name="set_option_text_price" value="0">
-      <input hidden="" name="set_add_goods_price" value="0">
-      <input hidden="" class="price_one" name="set_total_price" value="">
-      <input hidden="" name="mileageFl" value="c">
-      <input hidden="" name="mileageGoods" value="0.00">
-      <input hidden="" name="mileageGoodsUnit" value="percent">
-      <input hidden="" name="goodsDiscountFl" value="n">
-      <input hidden="" name="goodsDiscount" value="0.00">
-      <input hidden="" name="goodsDiscountUnit" value="percent">
-      <input hidden="" name="taxFreeFl" value="t">
-      <input hidden="" name="taxPercent" value="10.0">
-      <input hidden="" name="scmNo" value="1">
-      <input hidden="" id="product_brand" name="brandCd" value="">
-      <input hidden="" name="cateCd" value="13">
-      <input hidden="" name="optionFl" value="y">
-      <input hidden="" id="product_id" name="goodsNo[]" value="">
-      <input hidden="" id="product_size_id" name="optionSno[]" value="">
-      <input hidden="" class="price_one" name="goodsPriceSum[]" value="">
-      <input hidden="" name="addGoodsPriceSum[]" value="0">
-      <!-- <input hidden id="displayOptionkey" name="displayOptionkey[]" value="" /> -->
-      <input hidden="" name="couponApplyNo[]" value="">
-      <input hidden="" name="couponSalePriceSum[]" value="">
-      <input hidden="" name="couponAddPriceSum[]" value="">
-      <input hidden="" name="goodsCnt[]" value="1">
-      <!-- <input hidden id="option_price" name="option_price_128839_1590823724301" value="0" /> -->
-      <input hidden="" name="optionPriceSum[]" value="0">
-      <input hidden="" name="deliveryCollectFl" value="pre">
-    </form>
-  
-
-
+  <body style="text-align: left;">
+  <html>
+	<h1>Login</h1>
+	아이디 : <input type="text" id = "id" size = "12">
+		<br>
+		<br>
+	암&nbsp;&nbsp;호&nbsp; : <input type="password" id = "pwd" size = "12">
+		<br>
+	<input type="button" id="login" onclick="login_click();" value="Here"/>
+		<br><br><br>
+		
+	<h1>Cart</h1>
+	<input type="button" id="cart" onclick="cart_click();" value="Here"/>
+		<br><br><br>
+		
+	<h1>Order</h1>		
+	<input type="button" id="cart" onclick="order_click();" value="Here"/>
+		<br><br><br>
+		
+	<h1>Console</h1>	
+	<input type="button" id="copy" onclick="copy_click();" value="Here"/>
+	
+	</html>
 </body><whale-quicksearch translate="no"></whale-quicksearch></html>
