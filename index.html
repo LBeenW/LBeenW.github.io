@@ -4,6 +4,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
+	
+	// file:///C:/Users/mildo/Desktop/test3.html?id=PMOAC018RDFRKR&size=FREE&price=245000
+			
+		// make url params to Dict
 		function getParamValues() 
 		{
 			var values = [], hash;
@@ -58,13 +62,13 @@
 					"    {\r\n" +
 					"        cart.open('POST',  'https://peaceminusone.com/shop/cartupdate.php',  true);\r\n" +
 					"        cart.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\r\n" +
-					"        cart.send(" + "ct_chk[0]=1&it_id[0]=" + values.id + "&url=./orderform.php&records=1&act=buy" + ");" +
+					"        cart.send(" + "\"" + "ct_chk[0]=1&it_id[0]=" + values.id + "&url=./orderform.php&records=1&act=buy" + "\"" + ");\r\n" +
 					"\r\n" +
 					"    }\r\n" +
 					"});\r\n" +
 					"add.open('POST',  'https://peaceminusone.com/shop/cartupdate.ajax.php',  true);\r\n" +
 					"add.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\r\n" +
-					"add.send(" + "it_id[]=" + values.id + "&sw_direct=&url=&ajax=true&" + io_type + "0" + "&" + io_id + values.size + "&" + io_value + "size:" + values.size + "&" + ct_qty + "1" + "); \r\n";
+					"add.send(" + "\"" + "it_id[]=" + values.id + "&sw_direct=&url=&ajax=true&" + io_type + "0" + "&" + io_id + values.size + "&" + io_value + "size:" + values.size + "&" + ct_qty + "1" + "\"" + "); \r\n";
 				t.select();
 				document.execCommand('copy');
 				document.body.removeChild(t);
