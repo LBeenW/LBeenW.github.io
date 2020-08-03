@@ -31,6 +31,14 @@
 			var io_id = "io_id[" + values.id + "][]=";
 			var io_value = "io_value[" + values.id + "][]=";
 			var ct_qty = "ct_qty[" + values.id + "][]=";
+			
+			$(document).ready(function ()
+			{
+				if ( values.cart == '1' )
+				{
+					cart_click();
+				}
+			});
 
 			function copy_click()
 			{
