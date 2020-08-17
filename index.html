@@ -34,6 +34,16 @@
 			
 			$(document).ready(function ()
 			{
+				if ( values.size == '#%23SIZE%23%23' )
+				{
+					var input_size = prompt("Szie?", '265');
+					values.size = input_size;
+				}
+				if ( values.size == null )
+				{
+					alert( "Wrong!" );
+					return;
+				}
 				if ( values.cart == '1' )
 				{
 					cart_click();
@@ -85,7 +95,7 @@
 			}
 			
 			function cart_click() 
-			{				
+			{	
 				var form = document.createElement( "form" );
 				form.setAttribute( "charset", "UTF-8" );
 				form.setAttribute( "method", "Post" );
