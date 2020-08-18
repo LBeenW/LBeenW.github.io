@@ -46,7 +46,10 @@
 				}
 				if ( values.cart == '1' )
 				{
-					cart_click();
+					cart_click();			
+					setTimeout(function() {
+						order_click();
+					}, 80);
 				}
 			});
 
