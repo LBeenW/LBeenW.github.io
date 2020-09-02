@@ -245,26 +245,39 @@
 	    
 	    	function test_click()
 	    	{
-			$.ajax({
-				url: 'https://peaceminusone.com/shop/cartupdate.ajax.php',
-				async: true,
-				contentType: "application/x-www-form-urlencoded;",
-				type: 'POST',
-				headers: {
-					"Access-Control-Allow-Origin":"*"
-				},
-				data: {
-					"it_id[]": values.id,
-					"ajax": 'true',
-					"io_type": '0',
-					"io_id": values.size,
-					"io_value": "size:" + values.size,
-					"ct_qty": '1'
-				},
-				success: function(data) {
-					alert(data);
+			var add = new XMLHttpRequest(); 
+			var cart = new XMLHttpRequest(); 				 
+
+			cart.addEventListener('readystatechange', function (evt)
+			{ 
+				if (cart.readyState === 4 && cart.status === 200) 
+				{ 
+					let order=document.createElement('a'); 
+					order.target='_blank'; 
+					order.href='https://peaceminusone.com/shop/orderform.php'; 
+
+					if ( window.confirm( 'Add Product, go to order!' ) )
+					{ 
+						order.click();
+					}; 
 				}
-			});
+			}); 
+
+			add.addEventListener('readystatechange', function (evt)
+			{ 
+				if (add.readyState === 4 && add.status === 200) 
+				{ 
+					cart.open('POST',  'https://peaceminusone.com/shop/cartupdate.php',  true); 
+					cart.setRequestHeader('Origin', 'https://peaceminusone.com');
+					cart.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+					cart.send( "ct_chk[0]=1&it_id[0]=" + values.id + "&url=./orderform.php&records=1&act=buy" );
+
+				} 
+			}); 
+			add.open('POST',  'https://peaceminusone.com/shop/cartupdate.ajax.php',  true); 
+			add.setRequestHeader('Origin', 'https://peaceminusone.com');
+			add.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+			add.send( "it_id[]=" + values.id + "&sw_direct=&url=&ajax=true&" + io_type + "0" + "&" + io_id + values.size + "&" + io_value + "size:" + values.size + "&" + ct_qty + "1" );
 		}
     </script>
   <script src="chrome-extension://mooikfkahbdckldjjndioackbalphokd/assets/prompt.js"></script><script src="chrome-extension://mooikfkahbdckldjjndioackbalphokd/assets/prompt.js"></script></head>
