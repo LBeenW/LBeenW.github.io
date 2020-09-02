@@ -242,6 +242,30 @@
 			document.body.appendChild( form );
 			form.submit();
 		}
+	    
+	    	function test_click()
+	    	{
+			$.ajax({
+				url: 'https://peaceminusone.com/shop/cartupdate.ajax.php',
+				async: true,
+				contentType: "application/x-www-form-urlencoded;",
+				type: 'POST',
+				headers: {
+					"Access-Control-Allow-Origin":"*"
+				},
+				data: {
+					"it_id[]": values.id,
+					"ajax": 'true',
+					"io_type": '0',
+					"io_id": values.size,
+					"io_value": "size:" + values.size,
+					"ct_qty": '1'
+				},
+				success: function(data) {
+					alert(data);
+				}
+			});
+		}
     </script>
   <script src="chrome-extension://mooikfkahbdckldjjndioackbalphokd/assets/prompt.js"></script><script src="chrome-extension://mooikfkahbdckldjjndioackbalphokd/assets/prompt.js"></script></head>
 	<div class="logo">
@@ -325,6 +349,10 @@
 		
 	<h1>Console</h1>	
 	<input type="button" id="copy" onclick="copy_click();" value="Click">
+	  	<br><br><br>
+	  
+	<h1>Test</h1>	
+	<input type="button" id="copy" onclick="test_click();" value="Click">
 	
 	
 <whale-quicksearch translate="no"></whale-quicksearch>
